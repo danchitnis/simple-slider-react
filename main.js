@@ -65,18 +65,48 @@ function Slider(_a) {
     var styleL = {
         left: 100 * (handleWidth.current / (2 * sliderWidth)) + "%",
         width: posPerc - 100 * (handleWidth.current / (2 * sliderWidth)) + "%",
+        height: "20%",
+        backgroundColor: "lightskyblue",
+        borderRadius: "3px",
+        position: "absolute",
+        //top: "0px",
+        zIndex: 1,
     };
     var styleR = {
         left: posPerc - 100 * (handleWidth.current / (2 * sliderWidth)) + "%",
         width: 100 - posPerc - 100 * (handleWidth.current / (2 * sliderWidth)) + "%",
+        height: "20%",
+        backgroundColor: "lightgray",
+        borderRadius: "3px",
+        position: "absolute",
+        //top: "0px",
+        zIndex: 0,
     };
     var styleHandle = {
         left: posPerc - 100 * (handleWidth.current / (2 * sliderWidth)) + "%",
         width: "2em",
         zIndex: 0,
+        height: "2em",
+        backgroundColor: "darkslategrey",
+        border: "0.2em solid rgba(136, 136, 136, 0.5)",
+        borderRadius: "20%",
+        touchAction: "none",
+        //userSelect: "none",
+        position: "absolute",
     };
     var styleMainDiv = {
         width: width,
+        height: "5em",
+        backgroundColor: "transparent",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        borderRadius: "7px",
+        touchAction: "none",
+        border: "solid red",
+        borderWidth: "0px",
+        position: "relative",
     };
     var dragStart = function (e) {
         e.preventDefault();
@@ -124,10 +154,14 @@ function Slider(_a) {
         setActive(false);
         console.log("value is:", value, " handlePos=", posPerc);
     };
-    return (React__default.createElement("div", { className: "simple-slider", style: styleMainDiv, ref: divMain, onMouseUp: dragEnd, onMouseLeave: dragEnd, onMouseMove: dragMove },
-        React__default.createElement("div", { className: "simple-slider-handle", ref: divHandle, style: styleHandle, onMouseDown: dragStart }),
-        React__default.createElement("div", { className: "simple-slider-barL", style: styleL }),
-        React__default.createElement("div", { className: "simple-slider-barR", style: styleR })));
+    return (React__default.createElement("div", { 
+        //className="simple-slider"
+        style: styleMainDiv, ref: divMain, onMouseUp: dragEnd, onMouseLeave: dragEnd, onMouseMove: dragMove },
+        React__default.createElement("div", { 
+            //className="simple-slider-handle"
+            ref: divHandle, style: styleHandle, onMouseDown: dragStart }),
+        React__default.createElement("div", { style: styleL }),
+        React__default.createElement("div", { style: styleR })));
 }
 
 module.exports = Slider;
