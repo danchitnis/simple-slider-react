@@ -10,10 +10,10 @@ export default {
   input: "src/index.tsx",
   output: [
     {
-      file: "main.js",
+      file: "./dist/index.js",
       format: "cjs",
       sourcemap: true,
-    }
+    },
   ],
   plugins: [
     external(),
@@ -21,7 +21,7 @@ export default {
     typescript(),
     commonjs({
       namedExports: {
-        "react": ["useState", "useEffect", "useRef"],
+        react: ["useState", "useEffect", "useRef"],
       },
     }),
     sass({

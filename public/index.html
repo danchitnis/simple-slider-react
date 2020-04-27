@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head lang="en">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>React Rollup App</title>
+  </head>
+
+  <body>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="root"></div>
+    <script>
+      import("/dist/module/index.js");
+      window.supportsDynamicImport = true;
+    </script>
+    <script>
+      if (!window.supportsDynamicImport) {
+        const systemJsLoaderTag = document.createElement("script");
+        systemJsLoaderTag.src = "https://unpkg.com/systemjs@2.0.0-alpha.1/dist/s.min.js";
+        systemJsLoaderTag.addEventListener("load", function () {
+          System.import("./dist/nomodule/index.js");
+        });
+        document.head.appendChild(systemJsLoaderTag);
+      }
+    </script>
+  </body>
+
+  <style>
+    body {
+      background-color: rgb(10, 10, 10);
+      color: rgb(220, 220, 220);
+    }
+  </style>
+</html>

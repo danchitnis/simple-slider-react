@@ -4,9 +4,10 @@ import React, { useState, useEffect, useRef } from "react";
 type prop = {
   width: string;
   onUpdate: (value: number) => void;
+  debug?: boolean;
 };
 
-export default function Slider({ width, onUpdate }: prop) {
+export default function Slider({ width, onUpdate, debug }: prop) {
   let [active, setActive] = useState(false);
   let [value, setValue] = useState(50);
   let [posPerc, setPosPerc] = useState(50);
@@ -18,15 +19,8 @@ export default function Slider({ width, onUpdate }: prop) {
   const divHandle = useRef<HTMLDivElement>(null);
   let pxMax = useRef<number>(0);
   let pxMin = useRef<number>(0);
-  //let sliderWidth = useRef<number>(0);
+
   let handleWidth = useRef<number>(0);
-
-  //let sliderWidth: number;
-  //let handleWidth = 0;
-  //let pxMin: number;
-  //let pxMax: number;
-
-  //const handleOffset = 10;
 
   useEffect(() => {
     function handleResize() {
@@ -35,21 +29,10 @@ export default function Slider({ width, onUpdate }: prop) {
       const rectH = divHandle.current?.getBoundingClientRect();
       handleWidth.current = rectH ? rectH.width : 0;
 
-      //const width = divMainWidth - handleWidth.current;
-
       pxMin.current = handleWidth.current / 2;
       pxMax.current = divMainWidth - pxMin.current;
 
       setSliderWidth(divMainWidth);
-
-      console.log(
-        "pxMin=",
-        pxMin.current,
-        " pxMax=",
-        pxMax.current,
-        " handlewidth=",
-        handleWidth.current
-      );
     }
 
     handleResize();
@@ -90,8 +73,7 @@ export default function Slider({ width, onUpdate }: prop) {
   const styleHandle = {
     left: `${posPerc - 100 * (handleWidth.current / (2 * sliderWidth))}%`,
     width: "2em",
-    zIndex: 0,
-
+    zIndex: debug || false ? 0 : 2,
     height: "2em",
     backgroundColor: "darkslategrey",
     border: "0.2em solid rgba(136, 136, 136, 0.5)",
@@ -114,16 +96,14 @@ export default function Slider({ width, onUpdate }: prop) {
     borderRadius: "7px",
     touchAction: "none",
     border: "solid red",
-    borderWidth: "0px",
+    borderWidth: debug || false ? "1px" : "0px",
     position: "relative" as "relative",
   };
 
   const dragStart = (e: React.MouseEvent) => {
     e.preventDefault();
-    //console.log(e.currentTarget.getBoundingClientRect(), "🍔");
     setInitialX(e.clientX - handlePos - handleWidth.current / 2);
     setActive(true);
-    //translate(e.clientX);
   };
 
   const dragMove = (e: React.MouseEvent) => {
@@ -140,24 +120,18 @@ export default function Slider({ width, onUpdate }: prop) {
 
   const translate = (xPos: number) => {
     if (active) {
-      //setHandlePos(xPos - handleOffset);
       const newPos = xPos - handleWidth.current / 2;
 
       switch (true) {
         case newPos < pxMin.current: {
-          //setHandlePos(pxMin.current);
           newHandle(pxMin.current);
           break;
         }
         case newPos > pxMax.current: {
-          //setHandlePos(pxMax.current);
           newHandle(pxMax.current);
           break;
         }
         default: {
-          //styleL = { left: `${handlePos - handleOffset}px`, width: "2em" };
-          //setValue((100 * (handlePos - handleWidth.current / 2)) / sliderWidth);
-          //styleR.width = `${handlePos - handleOffset}px`;
           newHandle(newPos);
         }
       }
@@ -167,7 +141,28 @@ export default function Slider({ width, onUpdate }: prop) {
   const dragEnd = (e: React.MouseEvent) => {
     e.preventDefault();
     setActive(false);
-    console.log("value is:", value, " handlePos=", posPerc);
+    if (debug) {
+      console.log("value is:", value, " handlePos=", posPerc);
+    }
+  };
+
+  const touchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
+    const x = e.touches[0].clientX;
+    setInitialX(x - handlePos - handleWidth.current / 2);
+    setActive(true);
+  };
+
+  const touchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
+    const x = e.touches[0].clientX;
+    translate(x - initialX);
+    onUpdate(value);
+  };
+
+  const touchEnd = (e: React.TouchEvent) => {
+    e.preventDefault();
+    setActive(false);
   };
 
   return (
@@ -177,12 +172,15 @@ export default function Slider({ width, onUpdate }: prop) {
       ref={divMain}
       onMouseUp={dragEnd}
       onMouseLeave={dragEnd}
-      onMouseMove={dragMove}>
+      onMouseMove={dragMove}
+      onTouchMove={touchMove}
+      onTouchEnd={touchEnd}>
       <div
         //className="simple-slider-handle"
         ref={divHandle}
         style={styleHandle}
-        onMouseDown={dragStart}></div>
+        onMouseDown={dragStart}
+        onTouchStart={touchStart}></div>
 
       <div style={styleL}></div>
       <div style={styleR}></div>
