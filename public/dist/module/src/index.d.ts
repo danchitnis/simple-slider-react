@@ -1,8 +1,10 @@
 /// <reference types="react" />
 declare type prop = {
-    width: string;
+    min: number;
+    max: number;
+    inValue?: number;
     onUpdate: (value: number) => void;
     debug?: boolean;
 };
-export default function Slider({ width, onUpdate, debug }: prop): JSX.Element;
+export default function Slider({ min, max, inValue, onUpdate, debug }: prop): JSX.Element;
 export {};

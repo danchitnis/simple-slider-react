@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 //import "./slider.css";
 
 type prop = {
-  width: string;
+  min: number;
+  max: number;
+  step?: number;
+  inValue?: number;
   onUpdate: (value: number) => void;
   debug?: boolean;
 };
 
-export default function Slider({ width, onUpdate, debug }: prop) {
+export default function Slider({ min, max, step, inValue, onUpdate, debug }: prop) {
   let [active, setActive] = useState(false);
   let [value, setValue] = useState(50);
   let [posPerc, setPosPerc] = useState(50);
@@ -22,7 +25,7 @@ export default function Slider({ width, onUpdate, debug }: prop) {
 
   let handleWidth = useRef<number>(0);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     function handleResize() {
       const rect = divMain.current?.getBoundingClientRect();
       const divMainWidth = rect ? rect.width : 0;
@@ -33,11 +36,18 @@ export default function Slider({ width, onUpdate, debug }: prop) {
       pxMax.current = divMainWidth - pxMin.current;
 
       setSliderWidth(divMainWidth);
+      const v = inValue || 50;
+      const p = handleWidth.current / 2 + (v / 100) * divMainWidth;
+      setHandlePos(p);
+      setPosPerc((100 * p) / divMainWidth);
+      setValue(v);
+      //newHandle(handleWidth.current / 2 + (v / 100) * divMainWidth);
+      //setHandlePos(pxMin.current + (v / 100) * sliderWidth);
+
+      console.log("am here 😁");
     }
 
     handleResize();
-
-    setHandlePos((pxMax.current - pxMin.current) / 2);
 
     window.addEventListener("resize", handleResize);
 
@@ -45,6 +55,25 @@ export default function Slider({ width, onUpdate, debug }: prop) {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useLayoutEffect(() => {
+    const v = inValue || 50;
+    //newHandle(400);
+    //setHandlePos(pxMin.current + (v / 100) * sliderWidth);
+    //setPosPerc(v);
+    console.log("v=", v);
+    console.log("sliderwidth=", sliderWidth);
+    console.log("pxMin=", pxMin.current);
+  }, [sliderWidth]);
+
+  useLayoutEffect(() => {
+    const v = inValue || 50;
+    const p = handleWidth.current / 2 + (v / 100) * sliderWidth;
+    setHandlePos(p);
+    setPosPerc((100 * p) / sliderWidth);
+    setValue(v);
+    onUpdate(v);
+  }, [inValue, sliderWidth]);
 
   const styleL = {
     left: `${100 * (handleWidth.current / (2 * sliderWidth))}%`,
@@ -85,7 +114,7 @@ export default function Slider({ width, onUpdate, debug }: prop) {
   };
 
   const styleMainDiv = {
-    width: width,
+    width: "100%",
 
     height: "5em",
     backgroundColor: "transparent",

@@ -21,7 +21,7 @@ export default {
     typescript(),
     commonjs({
       namedExports: {
-        react: ["useState", "useEffect", "useRef"],
+        react: ["useState", "useEffect", "useRef", "useLayoutEffect"],
       },
     }),
     sass({

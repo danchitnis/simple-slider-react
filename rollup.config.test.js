@@ -40,7 +40,7 @@ export default {
       include: ["node_modules/**"],
       exclude: ["node_modules/process-es6/**"],
       namedExports: {
-        react: ["useState", "useEffect", "useRef"],
+        react: ["useState", "useEffect", "useRef", "useLayoutEffect"],
         "react-dom": ["render"],
       },
     }),

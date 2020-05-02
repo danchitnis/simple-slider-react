@@ -18,6 +18,7 @@
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.6",
     "babel-preset-react": "^6.24.1",
+    "nollup": "^0.11.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "^3.4.1",
@@ -36,7 +37,7 @@
   "scripts": {
     "build": "rollup -c",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "rollup -c rollup.config.test.js && serve public"
+    "start": "rollup --config rollup.config.test.js"
   },
   "repository": {
     "type": "git",

@@ -179,6 +179,7 @@ var react = createCommonjsModule(function (module) {
 var react_1 = react.useState;
 var react_2 = react.useEffect;
 var react_3 = react.useRef;
+var react_4 = react.useLayoutEffect;
 
 var scheduler_production_min = createCommonjsModule(function (module, exports) {
 var f,g,h,k,l;
@@ -622,7 +623,7 @@ function checkDCE() {
 });
 var reactDom_1 = reactDom.render;
 
-function Slider({ width, onUpdate, debug }) {
+function Slider({ min, max, inValue, onUpdate, debug }) {
     let [active, setActive] = react_1(false);
     let [value, setValue] = react_1(50);
     let [posPerc, setPosPerc] = react_1(50);
@@ -634,7 +635,7 @@ function Slider({ width, onUpdate, debug }) {
     let pxMax = react_3(0);
     let pxMin = react_3(0);
     let handleWidth = react_3(0);
-    react_2(() => {
+    react_4(() => {
         function handleResize() {
             var _a, _b;
             const rect = (_a = divMain.current) === null || _a === void 0 ? void 0 : _a.getBoundingClientRect();
@@ -644,14 +645,38 @@ function Slider({ width, onUpdate, debug }) {
             pxMin.current = handleWidth.current / 2;
             pxMax.current = divMainWidth - pxMin.current;
             setSliderWidth(divMainWidth);
+            const v = inValue || 50;
+            const p = handleWidth.current / 2 + (v / 100) * divMainWidth;
+            setHandlePos(p);
+            setPosPerc((100 * p) / divMainWidth);
+            setValue(v);
+            //newHandle(handleWidth.current / 2 + (v / 100) * divMainWidth);
+            //setHandlePos(pxMin.current + (v / 100) * sliderWidth);
+            console.log("am here 😁");
         }
         handleResize();
-        setHandlePos((pxMax.current - pxMin.current) / 2);
         window.addEventListener("resize", handleResize);
         return () => {
             window.removeEventListener("resize", handleResize);
         };
     }, []);
+    react_4(() => {
+        const v = inValue || 50;
+        //newHandle(400);
+        //setHandlePos(pxMin.current + (v / 100) * sliderWidth);
+        //setPosPerc(v);
+        console.log("v=", v);
+        console.log("sliderwidth=", sliderWidth);
+        console.log("pxMin=", pxMin.current);
+    }, [sliderWidth]);
+    react_4(() => {
+        const v = inValue || 50;
+        const p = handleWidth.current / 2 + (v / 100) * sliderWidth;
+        setHandlePos(p);
+        setPosPerc((100 * p) / sliderWidth);
+        setValue(v);
+        onUpdate(v);
+    }, [inValue, sliderWidth]);
     const styleL = {
         left: `${100 * (handleWidth.current / (2 * sliderWidth))}%`,
         width: `${posPerc - 100 * (handleWidth.current / (2 * sliderWidth))}%`,
@@ -685,7 +710,7 @@ function Slider({ width, onUpdate, debug }) {
         position: "absolute",
     };
     const styleMainDiv = {
-        width: width,
+        width: "100%",
         height: "5em",
         backgroundColor: "transparent",
         display: "flex",
@@ -765,10 +790,21 @@ function Slider({ width, onUpdate, debug }) {
 }
 
 function MainApp() {
-    const onUpdate = (value) => { };
+    let [inVal, setInVal] = react_1(50);
+    let [sliderVal, setSliderVal] = react_1(0);
+    const onUpdate = (value) => {
+        setSliderVal(value);
+    };
+    const onClick = () => {
+        setInVal(10);
+        setSliderVal(10);
+    };
     return (react.createElement("div", null,
-        react.createElement(Slider, { width: "100%", onUpdate: onUpdate }),
-        react.createElement("p", null, "Hello! \uD83D\uDE00")));
+        react.createElement(Slider, { min: 0, max: 100, inValue: sliderVal, onUpdate: onUpdate }),
+        react.createElement("p", null,
+            "Hello! \uD83D\uDE00 ",
+            sliderVal),
+        react.createElement("button", { onClick: onClick }, "Set Value")));
 }
 
 reactDom.render(react.createElement(react.StrictMode, null,
