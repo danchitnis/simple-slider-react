@@ -1,6 +1,5 @@
 //https://github.com/almerino/create-react-rollup-app/blob/master/rollup.config.js
 
-import babel from "rollup-plugin-babel";
 import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
 import typescript from "rollup-plugin-typescript2";
@@ -43,9 +42,6 @@ export default {
         react: ["useState", "useEffect", "useRef", "useLayoutEffect"],
         "react-dom": ["render"],
       },
-    }),
-    babel({
-      exclude: "node_modules/**",
     }),
     replace({
       "process.env.NODE_ENV": production

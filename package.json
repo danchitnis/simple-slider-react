@@ -1,6 +1,6 @@
 {
   "name": "simple-slider-react",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
   "main": "index.js",
   "types": "index.d.ts",
@@ -8,22 +8,19 @@
   "dependencies": {},
   "peerDependencies": {
     "@types/react": "^16.9.34",
-    "@types/react-dom": "^16.9.6",
+    "@types/react-dom": "^16.9.7",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/preset-typescript": "^7.9.0",
     "@types/react": "^16.9.34",
-    "@types/react-dom": "^16.9.6",
+    "@types/react-dom": "^16.9.7",
     "babel-preset-react": "^6.24.1",
     "nollup": "^0.11.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "^3.4.1",
-    "rollup": "^2.7.2",
-    "rollup-plugin-babel": "^4.4.0",
+    "rollup": "^2.7.6",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-peer-deps-external": "^2.2.2",

@@ -623,7 +623,7 @@ function checkDCE() {
 });
 var reactDom_1 = reactDom.render;
 
-function Slider({ min, max, inValue, onUpdate, debug }) {
+function Slider({ min, max, divs, inValue, onUpdate, onDrag, debug }) {
     let [active, setActive] = react_1(false);
     let [value, setValue] = react_1(50);
     let [posPerc, setPosPerc] = react_1(50);
@@ -644,14 +644,13 @@ function Slider({ min, max, inValue, onUpdate, debug }) {
             handleWidth.current = rectH ? rectH.width : 0;
             pxMin.current = handleWidth.current / 2;
             pxMax.current = divMainWidth - pxMin.current;
+            const midRange = (min + max) / 2;
             setSliderWidth(divMainWidth);
-            const v = inValue || 50;
-            const p = handleWidth.current / 2 + (v / 100) * divMainWidth;
+            const v = inValue || midRange;
+            const p = handleWidth.current / 2 + ((v - min) / (max - min)) * divMainWidth;
             setHandlePos(p);
             setPosPerc((100 * p) / divMainWidth);
             setValue(v);
-            //newHandle(handleWidth.current / 2 + (v / 100) * divMainWidth);
-            //setHandlePos(pxMin.current + (v / 100) * sliderWidth);
             console.log("am here 😁");
         }
         handleResize();
@@ -661,22 +660,85 @@ function Slider({ min, max, inValue, onUpdate, debug }) {
         };
     }, []);
     react_4(() => {
-        const v = inValue || 50;
-        //newHandle(400);
-        //setHandlePos(pxMin.current + (v / 100) * sliderWidth);
-        //setPosPerc(v);
-        console.log("v=", v);
-        console.log("sliderwidth=", sliderWidth);
-        console.log("pxMin=", pxMin.current);
-    }, [sliderWidth]);
-    react_4(() => {
-        const v = inValue || 50;
-        const p = handleWidth.current / 2 + (v / 100) * sliderWidth;
+        const v = inValue || (min + max) / 2;
+        const p = handleWidth.current / 2 + ((v - min) / (max - min)) * sliderWidth;
         setHandlePos(p);
         setPosPerc((100 * p) / sliderWidth);
         setValue(v);
+        onDrag(v);
         onUpdate(v);
     }, [inValue, sliderWidth]);
+    const dragStart = (e) => {
+        e.preventDefault();
+        setInitialX(e.clientX - handlePos - handleWidth.current / 2);
+        setActive(true);
+    };
+    const dragMove = (e) => {
+        e.preventDefault();
+        translate(e.clientX - initialX);
+        onDrag(value);
+    };
+    const dragEnd = (e) => {
+        e.preventDefault();
+        setActive(false);
+        if (debug) {
+            console.log("value is:", value, " handlePos=", posPerc);
+        }
+        onUpdate(value);
+    };
+    const translate = (xPos) => {
+        if (active) {
+            const newPos = xPos - handleWidth.current / 2;
+            newHandle(checkPos(newPos));
+        }
+    };
+    const newHandle = (pos) => {
+        const divsd = divs || 0;
+        const vRelative = (pos - pxMin.current) / (pxMax.current - pxMin.current);
+        let val = vRelative * (max - min) + min;
+        let p = pos;
+        //
+        if (divsd > 1) {
+            const step = (max - min) / (divsd - 1);
+            val = Math.round(val / step) * step;
+            p = handleWidth.current / 2 + ((val - min) / (max - min)) * sliderWidth;
+        }
+        const pck = checkPos(p);
+        setHandlePos(pck);
+        setPosPerc((100 * pck) / sliderWidth);
+        setValue(val);
+        console.log(val);
+    };
+    const checkPos = (pos) => {
+        switch (true) {
+            case pos < pxMin.current: {
+                return pxMin.current;
+            }
+            case pos > pxMax.current: {
+                return pxMax.current;
+            }
+            default: {
+                return pos;
+            }
+        }
+    };
+    const touchStart = (e) => {
+        e.preventDefault();
+        const x = e.touches[0].clientX;
+        setInitialX(x - handlePos - handleWidth.current / 2);
+        setActive(true);
+    };
+    const touchMove = (e) => {
+        e.preventDefault();
+        const x = e.touches[0].clientX;
+        translate(x - initialX);
+        onDrag(value);
+    };
+    const touchEnd = (e) => {
+        e.preventDefault();
+        setActive(false);
+        onUpdate(value);
+    };
     const styleL = {
         left: `${100 * (handleWidth.current / (2 * sliderWidth))}%`,
         width: `${posPerc - 100 * (handleWidth.current / (2 * sliderWidth))}%`,
@@ -686,6 +748,7 @@ function Slider({ min, max, inValue, onUpdate, debug }) {
         position: "absolute",
         //top: "0px",
         zIndex: 1,
+        cursor: "pointer",
     };
     const styleR = {
         left: `${posPerc - 100 * (handleWidth.current / (2 * sliderWidth))}%`,
@@ -696,6 +759,7 @@ function Slider({ min, max, inValue, onUpdate, debug }) {
         position: "absolute",
         //top: "0px",
         zIndex: 0,
+        cursor: "pointer",
     };
     const styleHandle = {
         left: `${posPerc - 100 * (handleWidth.current / (2 * sliderWidth))}%`,
@@ -708,6 +772,8 @@ function Slider({ min, max, inValue, onUpdate, debug }) {
         touchAction: "none",
         //userSelect: "none",
         position: "absolute",
+        //top: "0px",
+        cursor: active ? "grabbing" : "grab",
     };
     const styleMainDiv = {
         width: "100%",
@@ -723,62 +789,6 @@ function Slider({ min, max, inValue, onUpdate, debug }) {
         borderWidth: debug || false ? "1px" : "0px",
         position: "relative",
     };
-    const dragStart = (e) => {
-        e.preventDefault();
-        setInitialX(e.clientX - handlePos - handleWidth.current / 2);
-        setActive(true);
-    };
-    const dragMove = (e) => {
-        e.preventDefault();
-        translate(e.clientX - initialX);
-        onUpdate(value);
-    };
-    const newHandle = (pos) => {
-        setHandlePos(pos);
-        setPosPerc((100 * pos) / sliderWidth);
-        setValue((100 * (pos - pxMin.current)) / (pxMax.current - pxMin.current));
-    };
-    const translate = (xPos) => {
-        if (active) {
-            const newPos = xPos - handleWidth.current / 2;
-            switch (true) {
-                case newPos < pxMin.current: {
-                    newHandle(pxMin.current);
-                    break;
-                }
-                case newPos > pxMax.current: {
-                    newHandle(pxMax.current);
-                    break;
-                }
-                default: {
-                    newHandle(newPos);
-                }
-            }
-        }
-    };
-    const dragEnd = (e) => {
-        e.preventDefault();
-        setActive(false);
-        if (debug) {
-            console.log("value is:", value, " handlePos=", posPerc);
-        }
-    };
-    const touchStart = (e) => {
-        e.preventDefault();
-        const x = e.touches[0].clientX;
-        setInitialX(x - handlePos - handleWidth.current / 2);
-        setActive(true);
-    };
-    const touchMove = (e) => {
-        e.preventDefault();
-        const x = e.touches[0].clientX;
-        translate(x - initialX);
-        onUpdate(value);
-    };
-    const touchEnd = (e) => {
-        e.preventDefault();
-        setActive(false);
-    };
     return (react.createElement("div", { 
         //className="simple-slider"
         style: styleMainDiv, ref: divMain, onMouseUp: dragEnd, onMouseLeave: dragEnd, onMouseMove: dragMove, onTouchMove: touchMove, onTouchEnd: touchEnd },
@@ -790,17 +800,19 @@ function Slider({ min, max, inValue, onUpdate, debug }) {
 }
 
 function MainApp() {
-    let [inVal, setInVal] = react_1(50);
     let [sliderVal, setSliderVal] = react_1(0);
+    let [sliderInVal, setSliderInVal] = react_1(0);
     const onUpdate = (value) => {
+        //setSliderVal(value);
+    };
+    const onDrag = (value) => {
         setSliderVal(value);
     };
     const onClick = () => {
-        setInVal(10);
-        setSliderVal(10);
+        setSliderInVal(10);
     };
     return (react.createElement("div", null,
-        react.createElement(Slider, { min: 0, max: 100, inValue: sliderVal, onUpdate: onUpdate }),
+        react.createElement(Slider, { min: 1, max: 2, inValue: sliderInVal, onDrag: onDrag, onUpdate: onUpdate, divs: 11 }),
         react.createElement("p", null,
             "Hello! \uD83D\uDE00 ",
             sliderVal),
