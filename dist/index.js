@@ -51,7 +51,7 @@ function Slider({ min, max, divs, inValue, onUpdate, onDrag, debug }) {
             setHandlePos(p);
             setPosPerc((100 * p) / divMainWidth);
             setValue(v);
-            console.log("am here 😁");
+            //console.log("am here 😁");
         }
         handleResize();
         window.addEventListener("resize", handleResize);
@@ -107,7 +107,7 @@ function Slider({ min, max, divs, inValue, onUpdate, onDrag, debug }) {
         setHandlePos(pck);
         setPosPerc((100 * pck) / sliderWidth);
         setValue(val);
-        console.log(val);
+        //console.log(val);
     };
     const checkPos = (pos) => {
         switch (true) {

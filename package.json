@@ -1,10 +1,10 @@
 {
   "name": "simple-slider-react",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "",
-  "main": "index.js",
-  "types": "index.d.ts",
-  "typings": "index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "typings": "./dist/index.d.ts",
   "dependencies": {},
   "peerDependencies": {
     "@types/react": "^16.9.34",
