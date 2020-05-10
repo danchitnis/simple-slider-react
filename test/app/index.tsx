@@ -7,11 +7,12 @@ export default function MainApp(): JSX.Element {
   const [sliderInVal, setSliderInVal] = useState(2);
 
   const onUpdate = (value: number): void => {
-    //setSliderVal(value);
+    setSliderInVal(value);
+    //console.log("from main: ", value);
   };
 
   const onDrag = (value: number): void => {
-    setSliderVal(value);
+    //setSliderVal(value);
   };
 
   const onClick = (): void => {
@@ -27,9 +28,10 @@ export default function MainApp(): JSX.Element {
         onDrag={onDrag}
         onUpdate={onUpdate}
         divs={11}
+        debug={true}
       />
 
-      <p>Hello! 😀 {sliderVal}</p>
+      <p>Hello! 😀 {sliderInVal}</p>
 
       <button onClick={onClick}>Set Value</button>
     </div>

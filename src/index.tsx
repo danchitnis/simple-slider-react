@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 
 type prop = {
   min: number;
@@ -15,7 +15,8 @@ let pxMax = 0;
 let pxMin = 0;
 let initialX = 0;
 let active = false;
-let value = 0;
+let dragValue = 0;
+let mainValue = 0;
 let handlePos = 0;
 let handleWidth = 0;
 
@@ -28,7 +29,7 @@ export default function Slider({
   onDrag,
   debug,
 }: prop): JSX.Element {
-  const [posPerc, setPosPerc] = useState(50);
+  const [posPerc, setPosPerc] = useState(50); //center of the handle
 
   const divMain = useRef<HTMLDivElement>(null);
   const divHandle = useRef<HTMLDivElement>(null);
@@ -43,9 +44,9 @@ export default function Slider({
       pxMin = handleWidth / 2;
       pxMax = divMainWidth - pxMin;
 
-      sliderWidth = divMainWidth;
+      sliderWidth = pxMax - pxMin;
 
-      const p = handleWidth / 2 + ((value - min) / (max - min)) * divMainWidth;
+      const p = pxMin + ((mainValue - min) / (max - min)) * sliderWidth;
       newHandle(p);
     }
 
@@ -59,15 +60,12 @@ export default function Slider({
   }, []);
 
   useLayoutEffect(() => {
-    const width = divMain.current?.getBoundingClientRect().width || 0;
-
     const v = inValue == undefined ? (min + max) / 2 : inValue;
-    const p = handleWidth / 2 + ((v - min) / (max - min)) * width;
+    const p = pxMin + ((v - min) / (max - min)) * sliderWidth;
     newHandle(p);
-    console.log(sliderWidth, inValue, v, p);
 
-    onDrag(v);
-    onUpdate(v);
+    //console.log("😁", p);
+    mainValue = v;
   }, [inValue]);
 
   const dragStart = (e: React.MouseEvent): void => {
@@ -79,16 +77,19 @@ export default function Slider({
   const dragMove = (e: React.MouseEvent): void => {
     e.preventDefault();
     translate(e.clientX - initialX);
-    onDrag(value);
+    onDrag(dragValue);
   };
 
   const dragEnd = (e: React.MouseEvent): void => {
     e.preventDefault();
     active = false;
     if (debug) {
-      console.log("value is:", value, " handlePos=", posPerc);
+      //console.log("value is:", v, " handlePos=", posPerc);
     }
-    onUpdate(value);
+
+    //console.log(handlePos);
+    onUpdate(dragValue);
+    //console.log("pxMax", pxMax);
   };
 
   const translate = (xPos: number): void => {
@@ -100,20 +101,20 @@ export default function Slider({
 
   const newHandle = (pos: number): void => {
     const divsd = divs || 0;
-    const vRelative = (pos - pxMin) / (pxMax - pxMin);
+    const vRelative = (pos - pxMin) / sliderWidth;
     let val = vRelative * (max - min) + min;
     let p = pos;
     //
     if (divsd > 1) {
       const step = (max - min) / (divsd - 1);
-      val = Math.floor(val / step) * step; //????????????????
-      p = handleWidth / 2 + ((val - min) / (max - min)) * sliderWidth;
+      val = Math.round(val / step) * step; //????????????????
+      p = pxMin + ((val - min) / (max - min)) * sliderWidth;
     }
     const pck = checkPos(p);
     handlePos = pck;
-    setPosPerc((100 * pck) / sliderWidth);
-    value = val;
-    //console.log(posPerc);
+    setPosPerc((100 * pck) / (handleWidth + sliderWidth));
+    dragValue = val;
+    //console.log("🍔", dragValue);
   };
 
   const checkPos = (pos: number): number => {
@@ -143,13 +144,13 @@ export default function Slider({
     e.preventDefault();
     const x = e.touches[0].clientX;
     translate(x - initialX);
-    onDrag(value);
+    onDrag(dragValue);
   };
 
   const touchEnd = (e: React.TouchEvent): void => {
     e.preventDefault();
     active = false;
-    onUpdate(value);
+    onUpdate(mainValue);
   };
 
   const styleL = {
@@ -164,7 +165,7 @@ export default function Slider({
   };
 
   const styleR = {
-    left: `${posPerc - 100 * (handleWidth / (2 * sliderWidth))}%`,
+    left: `${posPerc}%`,
     width: `${Math.abs(100 - posPerc - 100 * (handleWidth / (2 * sliderWidth)))}%`,
     height: "20%",
     backgroundColor: "lightgray",
