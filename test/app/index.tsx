@@ -3,20 +3,19 @@ import React, { useState } from "react";
 import SimpleSlider from "../../src";
 
 export default function MainApp(): JSX.Element {
-  const [sliderVal, setSliderVal] = useState(0);
-  const [sliderInVal, setSliderInVal] = useState(2);
+  const [sliderVal, setSliderVal] = useState(2);
 
   const onUpdate = (value: number): void => {
-    setSliderInVal(value);
+    setSliderVal(value);
     //console.log("from main: ", value);
   };
 
   const onDrag = (value: number): void => {
-    //setSliderVal(value);
+    setSliderVal(value);
   };
 
   const onClick = (): void => {
-    setSliderInVal(10);
+    setSliderVal(10);
   };
 
   return (
@@ -24,14 +23,14 @@ export default function MainApp(): JSX.Element {
       <SimpleSlider
         min={0}
         max={10}
-        inValue={sliderInVal}
+        inValue={sliderVal}
         onDrag={onDrag}
         onUpdate={onUpdate}
         divs={11}
-        debug={true}
+        //debug={true}
       />
 
-      <p>Hello! 😀 {sliderInVal}</p>
+      <p>Hello! 😀 {sliderVal}</p>
 
       <button onClick={onClick}>Set Value</button>
     </div>

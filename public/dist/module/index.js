@@ -787,23 +787,23 @@ function Slider({ min, max, divs, inValue, onUpdate, onDrag, debug, }) {
 }
 
 function MainApp() {
-    const [sliderVal, setSliderVal] = react_1(0);
-    const [sliderInVal, setSliderInVal] = react_1(2);
+    const [sliderVal, setSliderVal] = react_1(2);
+    //const [sliderIVal, setSliderInVal] = useState(2);
     const onUpdate = (value) => {
-        setSliderInVal(value);
+        setSliderVal(value);
         //console.log("from main: ", value);
     };
     const onDrag = (value) => {
-        //setSliderVal(value);
+        setSliderVal(value);
     };
     const onClick = () => {
-        setSliderInVal(10);
+        setSliderVal(10);
     };
     return (react.createElement("div", null,
-        react.createElement(Slider, { min: 0, max: 10, inValue: sliderInVal, onDrag: onDrag, onUpdate: onUpdate, divs: 11, debug: true }),
+        react.createElement(Slider, { min: 0, max: 10, inValue: sliderVal, onDrag: onDrag, onUpdate: onUpdate, divs: 11 }),
         react.createElement("p", null,
             "Hello! \uD83D\uDE00 ",
-            sliderInVal),
+            sliderVal),
         react.createElement("button", { onClick: onClick }, "Set Value")));
 }
 
