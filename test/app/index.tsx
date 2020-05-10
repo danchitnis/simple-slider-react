@@ -2,27 +2,27 @@ import React, { useState } from "react";
 
 import SimpleSlider from "../../src";
 
-export default function MainApp() {
-  let [sliderVal, setSliderVal] = useState(0);
-  let [sliderInVal, setSliderInVal] = useState(0);
+export default function MainApp(): JSX.Element {
+  const [sliderVal, setSliderVal] = useState(0);
+  const [sliderInVal, setSliderInVal] = useState(2);
 
-  const onUpdate = (value: number) => {
+  const onUpdate = (value: number): void => {
     //setSliderVal(value);
   };
 
-  const onDrag = (value: number) => {
+  const onDrag = (value: number): void => {
     setSliderVal(value);
   };
 
-  const onClick = () => {
+  const onClick = (): void => {
     setSliderInVal(10);
   };
 
   return (
     <div>
       <SimpleSlider
-        min={1}
-        max={2}
+        min={0}
+        max={10}
         inValue={sliderInVal}
         onDrag={onDrag}
         onUpdate={onUpdate}

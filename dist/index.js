@@ -25,7 +25,7 @@ var React__default = _interopDefault(React);
 
 function Slider({ min, max, divs, inValue, onUpdate, onDrag, debug }) {
     let [active, setActive] = React.useState(false);
-    let [value, setValue] = React.useState(50);
+    let [value, setValue] = React.useState(0);
     let [posPerc, setPosPerc] = React.useState(50);
     let [handlePos, setHandlePos] = React.useState(0);
     let [initialX, setInitialX] = React.useState(0);
@@ -44,27 +44,27 @@ function Slider({ min, max, divs, inValue, onUpdate, onDrag, debug }) {
             handleWidth.current = rectH ? rectH.width : 0;
             pxMin.current = handleWidth.current / 2;
             pxMax.current = divMainWidth - pxMin.current;
-            const midRange = (min + max) / 2;
             setSliderWidth(divMainWidth);
-            const v = inValue || midRange;
-            const p = handleWidth.current / 2 + ((v - min) / (max - min)) * divMainWidth;
-            setHandlePos(p);
-            setPosPerc((100 * p) / divMainWidth);
-            setValue(v);
+            //const p = handleWidth.current / 2 + ((value - min) / (max - min)) * divMainWidth;
+            //newHandle(p);
+            //setValue(val);
             //console.log("am here 😁");
         }
+        const midRange = (min + max) / 2;
+        setValue(midRange);
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => {
             window.removeEventListener("resize", handleResize);
         };
-    }, []);
+    }, [min, max]);
     React.useLayoutEffect(() => {
         const v = inValue || (min + max) / 2;
         const p = handleWidth.current / 2 + ((v - min) / (max - min)) * sliderWidth;
-        setHandlePos(p);
-        setPosPerc((100 * p) / sliderWidth);
-        setValue(v);
+        newHandle(p);
+        //setHandlePos(p);
+        //setPosPerc((100 * p) / sliderWidth);
+        //setValue(v);
         onDrag(v);
         onUpdate(v);
     }, [inValue, sliderWidth]);
@@ -107,7 +107,7 @@ function Slider({ min, max, divs, inValue, onUpdate, onDrag, debug }) {
         setHandlePos(pck);
         setPosPerc((100 * pck) / sliderWidth);
         setValue(val);
-        //console.log(val);
+        //console.log(posPerc);
     };
     const checkPos = (pos) => {
         switch (true) {
@@ -141,23 +141,21 @@ function Slider({ min, max, divs, inValue, onUpdate, onDrag, debug }) {
     };
     const styleL = {
         left: `${100 * (handleWidth.current / (2 * sliderWidth))}%`,
-        width: `${posPerc - 100 * (handleWidth.current / (2 * sliderWidth))}%`,
+        width: `${Math.abs(posPerc - 100 * (handleWidth.current / (2 * sliderWidth)))}%`,
         height: "20%",
         backgroundColor: "lightskyblue",
         borderRadius: "3px",
         position: "absolute",
-        //top: "0px",
         zIndex: 1,
         cursor: "pointer",
     };
     const styleR = {
         left: `${posPerc - 100 * (handleWidth.current / (2 * sliderWidth))}%`,
-        width: `${100 - posPerc - 100 * (handleWidth.current / (2 * sliderWidth))}%`,
+        width: `${Math.abs(100 - posPerc - 100 * (handleWidth.current / (2 * sliderWidth)))}%`,
         height: "20%",
         backgroundColor: "lightgray",
         borderRadius: "3px",
         position: "absolute",
-        //top: "0px",
         zIndex: 0,
         cursor: "pointer",
     };
@@ -189,12 +187,8 @@ function Slider({ min, max, divs, inValue, onUpdate, onDrag, debug }) {
         borderWidth: debug || false ? "1px" : "0px",
         position: "relative",
     };
-    return (React__default.createElement("div", { 
-        //className="simple-slider"
-        style: styleMainDiv, ref: divMain, onMouseUp: dragEnd, onMouseLeave: dragEnd, onMouseMove: dragMove, onTouchMove: touchMove, onTouchEnd: touchEnd },
-        React__default.createElement("div", { 
-            //className="simple-slider-handle"
-            ref: divHandle, style: styleHandle, onMouseDown: dragStart, onTouchStart: touchStart }),
+    return (React__default.createElement("div", { style: styleMainDiv, ref: divMain, onMouseUp: dragEnd, onMouseLeave: dragEnd, onMouseMove: dragMove, onTouchMove: touchMove, onTouchEnd: touchEnd },
+        React__default.createElement("div", { ref: divHandle, style: styleHandle, onMouseDown: dragStart, onTouchStart: touchStart }),
         React__default.createElement("div", { style: styleL }),
         React__default.createElement("div", { style: styleR })));
 }

@@ -8,5 +8,5 @@ declare type prop = {
     onUpdate: (value: number) => void;
     debug?: boolean;
 };
-export default function Slider({ min, max, divs, inValue, onUpdate, onDrag, debug }: prop): JSX.Element;
+export default function Slider({ min, max, divs, inValue, onUpdate, onDrag, debug, }: prop): JSX.Element;
 export {};
