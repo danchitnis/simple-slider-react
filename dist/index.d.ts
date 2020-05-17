@@ -1,4 +1,3 @@
-/// <reference types="react" />
 declare type prop = {
     min: number;
     max: number;

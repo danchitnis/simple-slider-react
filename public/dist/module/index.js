@@ -788,7 +788,6 @@ function Slider({ min, max, divs, inValue, onUpdate, onDrag, debug, }) {
 
 function MainApp() {
     const [sliderVal, setSliderVal] = react_1(2);
-    //const [sliderIVal, setSliderInVal] = useState(2);
     const onUpdate = (value) => {
         setSliderVal(value);
         //console.log("from main: ", value);
